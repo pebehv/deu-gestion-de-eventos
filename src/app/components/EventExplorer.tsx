@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Calendar } from "./ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { EventosListServer } from "./EventPrueba";
 
 interface Evento {
   id: number;
@@ -45,6 +46,7 @@ export function EventExplorer({ eventos, onEventSelect }: EventExplorerProps) {
       {/* Header */}
       <div className="bg-foreground text-white py-16">
         <div className="container mx-auto px-4">
+          <EventosListServer />
           <h1 className="mb-4 text-white">Explorador de Eventos</h1>
           <p className="text-white/80 mb-8">Encuentra y regístrate en los mejores eventos</p>
           
