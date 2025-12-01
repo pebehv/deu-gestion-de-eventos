@@ -1,10 +1,13 @@
-"use client";
-import React, { useState } from 'react';
+"use client"; // <<< ¡Añade esta línea!
+import { useState } from "react";
 import { EventExplorer } from "./components/EventExplorer";
 import { EventDetail } from "./components/EventDetail";
 import { CreateEventForm } from "./components/CreateEventForm";
+import { Login } from "./components/Login";
 import { Button } from "./components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, LogOut } from "lucide-react";
+import { Toaster } from "./components/ui/sonner";
+import "./globals.css";
 
 type View = "explorer" | "detail" | "create";
 
@@ -176,12 +179,25 @@ const mockProveedores = [
   { id: 6, nombre: "Security Solutions Inc" },
 ];
 
-export default function Home() {
+export default function App() {
   const [currentView, setCurrentView] = useState<View>("explorer");
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
   const [eventos, setEventos] = useState(mockEventos);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
 
   const selectedEvent = selectedEventId ? eventos.find((e) => e.id === selectedEventId) : null;
+
+  const handleLogin = (email: string) => {
+    setIsAuthenticated(true);
+    setUserEmail(email);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUserEmail("");
+    setCurrentView("explorer");
+  };
 
   const handleEventSelect = (id: number) => {
     setSelectedEventId(id);
@@ -204,36 +220,68 @@ export default function Home() {
   };
 
   return (
-    <div className="relative">
-      {/* Floating Action Button for Create Event */}
-      {currentView === "explorer" && (
-        <Button
-          onClick={() => setCurrentView("create")}
-          className="fixed bottom-8 right-8 h-14 w-14 rounded-full shadow-lg bg-secondary hover:bg-secondary/90 z-50"
-          size="icon"
-        >
-          <Plus className="h-6 w-6" />
-        </Button>
-      )}
+    <>
+      <Toaster position="top-right" />
+      
+      {!isAuthenticated ? (
+        <Login onLogin={handleLogin} />
+      ) : (
+        <div className="relative">
+          {/* Header with Logout Button */}
+          <div className="fixed top-0 left-0 right-0 bg-white border-b border-border z-40 px-6 py-4">
+            <div className="max-w-7xl mx-auto flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <h2 className="text-foreground">Portal de Eventos</h2>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-muted-foreground">{userEmail}</span>
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Cerrar Sesión
+                </Button>
+              </div>
+            </div>
+          </div>
 
-      {/* Views */}
-      {currentView === "explorer" && (
-        <EventExplorer eventos={eventos} onEventSelect={handleEventSelect} />
-      )}
+          {/* Add padding to account for fixed header */}
+          <div className="pt-20">
+            {/* Floating Action Button for Create Event */}
+            {currentView === "explorer" && (
+              <Button
+                onClick={() => setCurrentView("create")}
+                className="fixed bottom-8 right-8 h-14 w-14 rounded-full shadow-lg bg-secondary hover:bg-secondary/90 z-50"
+                size="icon"
+              >
+                <Plus className="h-6 w-6" />
+              </Button>
+            )}
 
-      {currentView === "detail" && selectedEvent && (
-        <EventDetail evento={selectedEvent} onBack={() => setCurrentView("explorer")} />
-      )}
+            {/* Views */}
+            {currentView === "explorer" && (
+              <EventExplorer eventos={eventos} onEventSelect={handleEventSelect} />
+            )}
 
-      {currentView === "create" && (
-        <CreateEventForm
-          onBack={() => setCurrentView("explorer")}
-          onSubmit={handleCreateEvent}
-          usuarios={mockUsuarios}
-          patrocinadores={mockPatrocinadores}
-          proveedores={mockProveedores}
-        />
+            {currentView === "detail" && selectedEvent && (
+              <EventDetail evento={selectedEvent} onBack={() => setCurrentView("explorer")} />
+            )}
+
+            {currentView === "create" && (
+              <CreateEventForm
+                onBack={() => setCurrentView("explorer")}
+                onSubmit={handleCreateEvent}
+                usuarios={mockUsuarios}
+                patrocinadores={mockPatrocinadores}
+                proveedores={mockProveedores}
+              />
+            )}
+          </div>
+        </div>
       )}
-    </div>
+    </>
   );
 }
