@@ -6,6 +6,8 @@ import { Card } from "./ui/card";
 import { LogIn, User, Lock, Calendar } from "lucide-react";
 import { toast } from "sonner";
 
+
+const imgURL = "/biblioteca.jpg";
 interface LoginProps {
   onLogin: (email: string) => void;
 }
@@ -52,7 +54,12 @@ export function Login({ onLogin }: LoginProps) {
 
   return (
     <div className= "min-h-screen bg-gradient-to-br  flex items-center justify-center p-4 " 
-    style={{ background: 'rgb(1,105,91)' , padding: '15%' }}>
+    style={{
+        //backgrobackgroundImage: 'linear-gradient( rgba(0, 0, 0, 0.6),  rgba(0, 0, 0, 0.6)   )',
+        backgroundImage: `url('${imgURL}')`,
+        opacity: 0.8,
+        backgroundSize: 'cover',
+        padding: '15%' }}>
       <div className="w-full max-w-md">
         {/* Logo/Header */}
         <div className="text-center mb-8">
