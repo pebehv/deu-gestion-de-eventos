@@ -1,6 +1,8 @@
-"use client"; // <<< ¡Añade esta línea!
+// useApi.ts
+"use client";
 
 import { useState, useEffect } from 'react';
+
 export function useApi<T>(url: string) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
@@ -9,7 +11,20 @@ export function useApi<T>(url: string) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        // CORRECCIÓN 1: Usa el nombre correcto de variable
+        // Si es Next.js: NEXT_PUBLIC_API_URL
+        // Si es Create React App: REACT_APP_API_URL
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 
+                       process.env.REACT_APP_API_URL || 
+                       'http://localhost:8081'; // Valor por defecto
+        
+        // CORRECCIÓN 2: Valida que apiUrl no sea undefined
+        if (!apiUrl) {
+          throw new Error('API URL no configurada');
+        }
+
+        console.log('Fetching from:', `${apiUrl}${url}`); // Para debug
+        
         const response = await fetch(`${apiUrl}${url}`);
         if (!response.ok) throw new Error('Error en la solicitud');
         const result = await response.json();
